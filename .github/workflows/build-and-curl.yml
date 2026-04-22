@@ -1,0 +1,44 @@
+name: Build and Curl
+
+on:
+  workflow_dispatch:
+
+jobs:
+  docker-build-curl-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+
+      - name: Build Docker image
+        run: docker build -t pipeline-tests .
+
+      - name: Run container
+        env:
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+        run: |
+          if [ -z "$DJANGO_SECRET_KEY" ]; then
+            echo "DJANGO_SECRET_KEY secret is not set."
+            exit 1
+          fi
+          docker run -d --rm \
+            -p 8000:8000 \
+            -e DJANGO_SECRET_KEY="$DJANGO_SECRET_KEY" \
+            --name pipeline-tests-container \
+            pipeline-tests
+
+      - name: Wait for app
+        run: |
+          for i in {1..15}; do
+            if curl -fsS http://localhost:8000 > /dev/null; then
+              echo "App is reachable."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "App did not become reachable in time."
+          docker logs pipeline-tests-container || true
+          exit 1
+
+      - name: Curl index page
+        run: curl -fsS http://localhost:8000
