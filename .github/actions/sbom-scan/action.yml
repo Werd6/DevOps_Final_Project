@@ -1,0 +1,20 @@
+name: SBOM Scan
+description: Generate an SBOM and scan dependencies for critical CVEs.
+
+inputs:
+  requirements_path:
+    description: Path to Python requirements file
+    required: false
+    default: requirements.txt
+  sbom_path:
+    description: Output path for generated SBOM JSON file
+    required: false
+    default: sbom.json
+
+outputs:
+  sbom_path:
+    description: Path to generated SBOM file
+
+runs:
+  using: docker
+  image: Dockerfile

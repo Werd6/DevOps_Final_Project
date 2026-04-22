@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
       - name: Build Docker image
         run: docker build -t pipeline-tests .
@@ -42,3 +42,24 @@ jobs:
 
       - name: Curl index page
         run: curl -fsS http://localhost:8000
+
+  sbom-scan-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Run custom SBOM scan action
+        id: sbom_scan
+        uses: ./.github/actions/sbom-scan
+        with:
+          requirements_path: requirements.txt
+          sbom_path: sbom.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: project-sbom
+          path: sbom.json
+          compression-level: 0
+          if-no-files-found: error
