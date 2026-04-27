@@ -2,6 +2,22 @@ name: Build and Curl
 
 on:
   workflow_dispatch:
+    inputs:
+      run_terraform:
+        description: Run Terraform custom action job
+        required: false
+        type: boolean
+        default: false
+      tf_stage:
+        description: Terraform stage directory (currently stage1 only)
+        required: false
+        type: string
+        default: stage1
+      state_key:
+        description: Unique Terraform backend state key prefix
+        required: false
+        type: string
+        default: dswanberg
 
 jobs:
   docker-build-curl-test:
@@ -63,3 +79,20 @@ jobs:
           path: sbom.json
           compression-level: 0
           if-no-files-found: error
+
+  terraform-stage-test:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.run_terraform == 'true' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Run custom Terraform action
+        uses: ./.github/actions/terraform
+        with:
+          arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+          arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
+          arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+          state_key: ${{ github.event.inputs.state_key }}
+          tf_stage: ${{ github.event.inputs.tf_stage }}
