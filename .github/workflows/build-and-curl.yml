@@ -142,4 +142,4 @@ jobs:
           arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
           state_key: ${{ github.event.inputs.state_key }}
           tf_stage: stage2
-          django_secret_key_prod: ${{ secrets['DJANGO_SECRET_KEY.prod'] }}
+          django_secret_key_prod: ${{ secrets.DJANGO_SECRET_KEY_PROD }}
