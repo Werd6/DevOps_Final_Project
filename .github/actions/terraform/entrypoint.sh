@@ -8,6 +8,7 @@ export ARM_CLIENT_SECRET="${INPUT_ARM_CLIENT_SECRET:-}"
 
 STATE_KEY="${INPUT_STATE_KEY:-}"
 TF_STAGE="${INPUT_TF_STAGE:-}"
+DJANGO_SECRET_KEY_PROD="${INPUT_DJANGO_SECRET_KEY_PROD:-}"
 
 if [ -z "${ARM_SUBSCRIPTION_ID}" ] || [ -z "${ARM_TENANT_ID}" ] || [ -z "${ARM_CLIENT_ID}" ] || [ -z "${ARM_CLIENT_SECRET}" ]; then
   echo "Missing required Azure ARM credential inputs."
@@ -26,11 +27,6 @@ fi
 
 cd /github/workspace
 
-if [ "${TF_STAGE}" != "stage1" ]; then
-  echo "Unsupported tf_stage '${TF_STAGE}' for this step. Only 'stage1' is implemented right now."
-  exit 1
-fi
-
 if [ ! -d "${TF_STAGE}" ]; then
   echo "Stage directory '${TF_STAGE}' not found in repository root."
   exit 1
@@ -43,8 +39,26 @@ fi
 
 PLAN_FILE="${TF_STAGE}.tfplan"
 
-terraform -chdir="${TF_STAGE}" init \
-  -backend-config="key=${STATE_KEY}.tfstate" \
-  -backend-config="use_azuread_auth=true"
-terraform -chdir="${TF_STAGE}" plan -out="${PLAN_FILE}"
-terraform -chdir="${TF_STAGE}" apply -auto-approve "${PLAN_FILE}"
+if [ "${TF_STAGE}" = "stage1" ]; then
+  terraform -chdir="${TF_STAGE}" init \
+    -backend-config="key=${STATE_KEY}.tfstate" \
+    -backend-config="use_azuread_auth=true"
+  terraform -chdir="${TF_STAGE}" plan -out="${PLAN_FILE}"
+  terraform -chdir="${TF_STAGE}" apply -auto-approve "${PLAN_FILE}"
+elif [ "${TF_STAGE}" = "stage2" ]; then
+  if [ -z "${DJANGO_SECRET_KEY_PROD}" ]; then
+    echo "Missing required input for stage2: django_secret_key_prod"
+    exit 1
+  fi
+
+  terraform -chdir="${TF_STAGE}" init \
+    -backend-config="key=${STATE_KEY}.tfstate" \
+    -backend-config="use_azuread_auth=true"
+  terraform -chdir="${TF_STAGE}" apply -auto-approve \
+    -var="django_secret_key_prod=${DJANGO_SECRET_KEY_PROD}" \
+    -var="arm_client_id=${ARM_CLIENT_ID}" \
+    -var="arm_client_secret=${ARM_CLIENT_SECRET}"
+else
+  echo "Unsupported tf_stage '${TF_STAGE}'. Supported values: stage1, stage2"
+  exit 1
+fi

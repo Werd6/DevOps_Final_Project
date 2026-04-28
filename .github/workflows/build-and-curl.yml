@@ -123,3 +123,23 @@ jobs:
           docker build -t application-final .
           docker tag application-final "${ACR_LOGIN_SERVER}/final:latest"
           docker push "${ACR_LOGIN_SERVER}/final:latest"
+
+  tf-stage-two:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.run_terraform == 'true' }}
+    needs:
+      - build-tag-push
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Run custom Terraform action (stage2)
+        uses: ./.github/actions/terraform
+        with:
+          arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+          arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
+          arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+          state_key: ${{ github.event.inputs.state_key }}
+          tf_stage: stage2
+          django_secret_key_prod: ${{ secrets['DJANGO_SECRET_KEY.prod'] }}
