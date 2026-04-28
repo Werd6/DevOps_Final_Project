@@ -18,7 +18,7 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_container_registry" "teacher-acr" {
+resource "azurerm_container_registry" "drew-acr" {
   name                = "acrdswanbergacmp2400"
   resource_group_name = "rg-drew"
   location            = "Central US"
