@@ -99,6 +99,3 @@ jobs:
           arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
           state_key: ${{ github.event.inputs.state_key }}
           tf_stage: ${{ github.event.inputs.tf_stage }}
-          tf_backend_resource_group_name: ${{ secrets.TF_BACKEND_RESOURCE_GROUP_NAME }}
-          tf_backend_storage_account_name: ${{ secrets.TF_BACKEND_STORAGE_ACCOUNT_NAME }}
-          tf_backend_container_name: ${{ secrets.TF_BACKEND_CONTAINER_NAME }}
