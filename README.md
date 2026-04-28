@@ -2,7 +2,7 @@ This is my DevOps Final Project.
 
 Link to my video explaining it:
 
-AI DISCLOSURE:
+AI DISCLOSURE:/n
 This project utilized AI in a few capacities.
 Cursor IDE: I use Cursor as my primary IDE for my personal programming so for local work on ther project i used Cursor.
 Being able to ask Cursor questions about my project is super helpful, especially when running into bugs.
