@@ -18,9 +18,9 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_container_registry" "drew-acr" {
+resource "azurerm_container_registry" "dswanberg-acr" {
   name                = "acrdswanbergacmp2400"
-  resource_group_name = "rg-drew"
+  resource_group_name = "rg-dswanberg"
   location            = "Central US"
   sku                 = "Basic"
   admin_enabled       = false
