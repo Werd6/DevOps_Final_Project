@@ -20,6 +20,9 @@ inputs:
   tf_stage:
     description: Terraform stage directory to execute (for example stage1)
     required: true
+  django_secret_key_prod:
+    description: Django secret key value for stage2 container deployment
+    required: false
 
 runs:
   using: docker
