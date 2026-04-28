@@ -20,15 +20,6 @@ inputs:
   tf_stage:
     description: Terraform stage directory to execute (for example stage1)
     required: true
-  tf_backend_resource_group_name:
-    description: Resource group that holds the Terraform backend storage account
-    required: true
-  tf_backend_storage_account_name:
-    description: Storage account that holds Terraform state
-    required: true
-  tf_backend_container_name:
-    description: Blob container name used for Terraform state
-    required: true
 
 runs:
   using: docker

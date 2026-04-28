@@ -2,40 +2,26 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = "4.68.0"
     }
   }
 
-  backend "azurerm" {}
+  backend "azurerm" {
+    resource_group_name  = "rg-acmp-final"
+    storage_account_name = "acmp2400storageaccount"
+    container_name       = "big-tf-state-acmp2400"
+    use_azuread_auth     = true
+  }
 }
 
 provider "azurerm" {
   features {}
 }
 
-variable "state_key" {
-  description = "Unique key used for state isolation and naming."
-  type        = string
-}
-
-locals {
-  resource_group_name = "rg${var.state_key}"
-  acr_name            = "${var.state_key}acr"
-}
-
-data "azurerm_resource_group" "target" {
-  name = local.resource_group_name
-}
-
-resource "azurerm_container_registry" "app" {
-  name                = local.acr_name
-  resource_group_name = data.azurerm_resource_group.target.name
-  location            = data.azurerm_resource_group.target.location
+resource "azurerm_container_registry" "teacher-acr" {
+  name                = "acrteacheracmp2400"
+  resource_group_name = "rg-teacher"
+  location            = "Central US"
   sku                 = "Basic"
   admin_enabled       = false
-}
-
-output "acr_login_server" {
-  description = "Login server for the Azure Container Registry."
-  value       = azurerm_container_registry.app.login_server
 }
