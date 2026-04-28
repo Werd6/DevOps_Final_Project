@@ -83,6 +83,9 @@ jobs:
   terraform-stage-test:
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.run_terraform == 'true' }}
+    needs:
+      - docker-build-curl-test
+      - sbom-scan-test
     steps:
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
@@ -96,3 +99,6 @@ jobs:
           arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
           state_key: ${{ github.event.inputs.state_key }}
           tf_stage: ${{ github.event.inputs.tf_stage }}
+          tf_backend_resource_group_name: ${{ secrets.TF_BACKEND_RESOURCE_GROUP_NAME }}
+          tf_backend_storage_account_name: ${{ secrets.TF_BACKEND_STORAGE_ACCOUNT_NAME }}
+          tf_backend_container_name: ${{ secrets.TF_BACKEND_CONTAINER_NAME }}
