@@ -1,7 +1,5 @@
 This is my DevOps Final Project.
 
-Link to my video explaining it:
-
 AI DISCLOSURE:
 
 This project utilized AI in a few capacities.
