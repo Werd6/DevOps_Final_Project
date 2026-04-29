@@ -173,7 +173,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
-
+      - name: Wait before cleanup
+        run: sleep 300
       - name: Run custom Terraform action (stage3 destroy)
         uses: ./.github/actions/terraform
         with:
