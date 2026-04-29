@@ -58,7 +58,13 @@ elif [ "${TF_STAGE}" = "stage2" ]; then
     -var="django_secret_key_prod=${DJANGO_SECRET_KEY_PROD}" \
     -var="arm_client_id=${ARM_CLIENT_ID}" \
     -var="arm_client_secret=${ARM_CLIENT_SECRET}"
+elif [ "${TF_STAGE}" = "stage3" ]; then
+  terraform -chdir="${TF_STAGE}" init \
+    -backend-config="key=${STATE_KEY}.tfstate" \
+    -backend-config="use_azuread_auth=true"
+  terraform -chdir="${TF_STAGE}" plan -out="${PLAN_FILE}"
+  terraform -chdir="${TF_STAGE}" apply -auto-approve "${PLAN_FILE}"
 else
-  echo "Unsupported tf_stage '${TF_STAGE}'. Supported values: stage1, stage2"
+  echo "Unsupported tf_stage '${TF_STAGE}'. Supported values: stage1, stage2, stage3"
   exit 1
 fi
