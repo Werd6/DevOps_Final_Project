@@ -156,7 +156,11 @@ jobs:
       - name: Validate deployed container reachability
         run: |
           cd stage2
-          PREFIX="$(rg 'dns_name_label' main.tf | awk -F '=' '{print $2}' | tr -d '"' | xargs)"
+          PREFIX="$(grep 'dns_name_label' main.tf | awk -F '=' '{print $2}' | tr -d '"' | xargs)"
+          if [ -z "${PREFIX}" ]; then
+            echo "Failed to parse dns_name_label from stage2/main.tf"
+            exit 1
+          fi
           echo "Using DNS prefix: ${PREFIX}"
           sleep 50
           curl -fsS "http://${PREFIX}.centralus.azurecontainer.io:8000"
